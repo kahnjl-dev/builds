@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A daily process an AI can't quietly skip | Jordan Kahn</title>
+<meta name="description" content="An AI assistant skipped a week of work and reported it done. This is the ledger and gate system Jordan Kahn built so it can't happen again.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1F4EE;
+    --ink: #15251F;
+    --muted: #55655E;
+    --rule: #C5CFC4;
+    --refuse: #B4311F;
+    --pass: #1E6B57;
+    --screen: #15251F;
+    --screen-ink: #E4EBE2;
+    --sans: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.5rem; }
+  .prose { max-width: 41rem; }
+  a { color: var(--ink); text-underline-offset: 0.18em; }
+  a:focus-visible { outline: 2px solid var(--pass); outline-offset: 3px; }
+
+  header.top {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    font-size: 0.9375rem;
+  }
+  header.top .who { font-weight: 600; text-decoration: none; }
+  header.top .what { color: var(--muted); }
+
+  .hero { padding: 4.5rem 0 3.5rem; }
+  h1 {
+    font-size: clamp(2.4rem, 6.2vw, 4.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin: 0 0 1.75rem;
+    max-width: 15ch;
+  }
+  .lede { font-size: 1.25rem; line-height: 1.5; margin: 0 0 2.75rem; max-width: 38rem; }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    background: var(--screen);
+    color: var(--screen-ink);
+    margin: 0;
+    padding: 1.4rem 1.5rem;
+    overflow-x: auto;
+    border-radius: 3px;
+  }
+  pre .cmd { color: #9FB3A8; }
+  pre .fail { color: #FF9C8A; font-weight: 500; }
+  pre .ok { color: #8FD9BF; font-weight: 500; }
+  pre .dim { color: #9FB3A8; }
+  figure { margin: 0; min-width: 0; }
+  .two > * { min-width: 0; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  figcaption { font-size: 0.9375rem; color: var(--muted); margin-top: 0.75rem; max-width: 41rem; }
+
+  section { padding: 3.25rem 0; border-top: 1px solid var(--rule); }
+  h2 {
+    font-size: 1.75rem; line-height: 1.2; letter-spacing: -0.012em;
+    font-weight: 600; margin: 0 0 1.25rem;
+  }
+  p { margin: 0 0 1.1rem; }
+  code { font-family: var(--mono); font-size: 0.9em; }
+
+  ol.flow {
+    list-style: none; margin: 2rem 0 2.25rem; padding: 0;
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+    counter-reset: step;
+  }
+  ol.flow li {
+    counter-increment: step;
+    border-top: 3px solid var(--ink);
+    padding: 0.9rem 1rem 0 0;
+    font-size: 0.9375rem; line-height: 1.5;
+  }
+  ol.flow li.stop { border-top-color: var(--refuse); }
+  ol.flow li::before {
+    content: counter(step);
+    display: block; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  ol.flow strong { display: block; font-size: 1.0625rem; font-weight: 600; margin-bottom: 0.25rem; }
+  ol.flow li.stop strong { color: var(--refuse); }
+  .key { font-size: 0.9375rem; color: var(--muted); margin: -1rem 0 2rem; }
+  .key span { display: inline-block; width: 1.5rem; height: 3px; background: var(--refuse); vertical-align: middle; margin-right: 0.5rem; }
+
+  dl.decisions { margin: 1.75rem 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 3rem; }
+  dl.decisions dt { font-weight: 600; font-size: 1.125rem; margin-bottom: 0.4rem; }
+  dl.decisions dd { margin: 0; }
+
+  table { border-collapse: collapse; width: 100%; margin-top: 1.5rem; }
+  th, td { text-align: left; vertical-align: top; padding: 0.9rem 1.5rem 0.9rem 0; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; font-size: 0.9375rem; color: var(--muted); border-bottom: 1px solid var(--ink); }
+  td:first-child { width: 46%; }
+  table.ledger td:first-child { width: auto; }
+  table.ledger td.n { font-family: var(--mono); font-size: 1.0625rem; white-space: nowrap; text-align: right; padding-right: 2rem; width: 7rem; }
+  .asof { color: var(--muted); font-size: 0.9375rem; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; margin-top: 1.5rem; }
+
+  footer { border-top: 1px solid var(--ink); padding: 2rem 0 3.5rem; font-size: 0.9375rem; }
+  footer p { margin: 0 0 0.3rem; }
+
+  @media (max-width: 52rem) {
+    ol.flow { grid-template-columns: 1fr 1fr; gap: 1.5rem 0; }
+    dl.decisions, .two { grid-template-columns: 1fr; }
+    .hero { padding: 3rem 0 2.5rem; }
+  }
+  @media (max-width: 34rem) {
+    ol.flow { grid-template-columns: 1fr; }
+    td:first-child { width: auto; }
+    table.changes, table.changes tbody, table.changes tr, table.changes td { display: block; }
+    table.changes thead { display: none; }
+    table.changes td { border: 0; padding: 0 0 0.4rem; }
+    table.changes tr { border-bottom: 1px solid var(--rule); padding: 0.9rem 0; }
+    table.changes td:first-child { font-weight: 600; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="who" href="../">Jordan Kahn</a>
+    <a class="what" href="../">All builds</a>
+  </header>
+
+  <div class="hero">
+    <h1>A daily process an AI can't quietly skip</h1>
+    <p class="lede">I run my job search through an AI assistant. In September I found it had been skipping whole steps for more than a week and reporting them done. This is the system I built so that can't happen again.</p>
+
+    <figure>
+<pre><span class="cmd">$ python3 sweeprun.py verify</span>
+<span class="fail">FAIL — 11 cell(s) in today's scope not run.</span>
+Do NOT write the sweep file. Run `sweeprun.py next` and keep going, or stop and say the sweep is incomplete.
+   not run: LinkedIn  ·  "AI automation"
+   not run: LinkedIn  ·  "workflow automation"
+   not run: ATS text search  ·  "n8n"
+   not run: ATS text search  ·  "Airtable"
+<span class="dim">   ... 7 more</span></pre>
+      <figcaption>Real output from November 13, 2026. The check names every missing step and blocks the day's report until each one has run.</figcaption>
+    </figure>
+  </div>
+
+  <section>
+    <div class="prose">
+      <h2>What went wrong</h2>
+      <p>The search has a fixed daily routine: a set of searches across job boards, a pass through my inbox, and a tailored application for each role I choose. I gave an AI assistant written instructions and let it run the routine in conversation.</p>
+      <p>It reported every day as complete. When I checked one day's work against the instructions, it had run 2 of the 11 required searches. The instructions were clear. Nothing enforced them.</p>
+      <p>My first fix was a checklist script. A review of that script found two problems: it had never been run, and it would mark a step done with no proof that anything had happened.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="prose">
+      <h2>How it works now</h2>
+      <p>The routine runs in six steps. Three of them are stops, where a script or a person has to pass the work before it moves on.</p>
+    </div>
+
+    <ol class="flow">
+      <li><strong>Plan</strong>A data file lists every search the day requires. A script reads it and prints the plan.</li>
+      <li><strong>Run and record</strong>Each search is logged with the address that was loaded and the first three results.</li>
+      <li class="stop"><strong>Verify</strong>One command fails if any required search is missing. No report is written until it passes.</li>
+      <li><strong>Build</strong>For each role I pick, the assistant builds a resume from one master file.</li>
+      <li class="stop"><strong>Gate</strong>A script checks every document and requires a saved copy of the posting.</li>
+      <li class="stop"><strong>Send</strong>I read each package and submit it myself.</li>
+    </ol>
+    <p class="key"><span></span>A stop. Work does not pass without a check.</p>
+
+    <div class="two">
+      <figure>
+<pre><span class="cmd">$ python3 sweeprun.py mark LinkedIn "AI operations" --count 100</span>
+<span class="fail">REFUSED:</span> --url is required. Give the search URL you loaded, or the MCP call as text.
+
+<span class="cmd">$ python3 sweeprun.py mark LinkedIn "AI operations" --count 100 --url "https://..."</span>
+<span class="fail">REFUSED:</span> --count > 0 needs --top "title 1 | title 2 | title 3" (first result titles, verbatim).</pre>
+        <figcaption>The ledger refuses an entry that has no evidence attached.</figcaption>
+      </figure>
+      <figure>
+<pre><span class="ok">All validations PASSED!</span>
+RESUME em-dashes: 0
+RESUME en-dashes: 0
+resume headline: Business Systems &amp; AI Automation
+resume headline separators: 0
+resume headline words: 5
+resume repeated lead verb: 2
+resume person-leak: 0
+resume pages: 2</pre>
+        <figcaption>Gate output for one resume. Most of these lines exist because an earlier resume broke that rule.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Four decisions</h2>
+    <dl class="decisions">
+      <div>
+        <dt>Rules live in data, not in instructions</dt>
+        <dd>The assistant and the checker read the same file, so there is one definition of the day's work. On November 13 I retargeted the whole search by editing that file. The daily set went from 23 searches to 18, and the checker enforced the new set on the next run.</dd>
+      </div>
+      <div>
+        <dt>Every step leaves a file</dt>
+        <dd>A search leaves a ledger row. A package leaves a saved posting and a written read-through. The next step looks for the file and stops if it isn't there.</dd>
+      </div>
+      <div>
+        <dt>Every rejection is logged with a reason</dt>
+        <dd>A posting I turn down gets a row and a reason code. Later runs check new results against that log, so a rejected posting doesn't come back.</dd>
+      </div>
+      <div>
+        <dt>A person decides at fixed points</dt>
+        <dd>I choose which roles to pursue. I read every package before it goes out. I send every application myself. The assistant works inside those points and has no way around them.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>What broke, and what I changed</h2>
+    <table class="changes">
+      <thead><tr><th>What broke</th><th>What I changed</th></tr></thead>
+      <tbody>
+        <tr><td>The first full plan would have demanded about 140 searches in one day.</td><td>Split the work into a required daily set and a slower rotation, each with its own schedule in the data file.</td></tr>
+        <tr><td>One job board was running 27 searches a day by accident.</td><td>Replaced them with a single scan of the whole board, sorted by date.</td></tr>
+        <tr><td>The inbox check only looked at the inbox. I file job mail under a label, so 108 messages were invisible to it.</td><td>The check now queries the label as well as the inbox.</td></tr>
+        <tr><td>LinkedIn results were read from page one only, about six postings.</td><td>Each search now reads four pages, and the ledger records how many results it saw.</td></tr>
+        <tr><td>One LinkedIn pass returned 1,600 results that were really 698 roles. The rest were reposts and city copies.</td><td>Added a cutoff that drops postings older than the last run, and a company-and-title check against everything already logged.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>By the numbers</h2>
+    <p class="asof">As of November 13, 2026.</p>
+    <table class="ledger">
+      <tbody>
+        <tr><td class="n">54</td><td>daily search reports since August 18</td></tr>
+        <tr><td class="n">18</td><td>required searches a day, each logged with evidence</td></tr>
+        <tr><td class="n">3,600+</td><td>postings rejected with a logged reason. The top three: a hard requirement I don't meet (1,077), poor fit (926), a different job function (668)</td></tr>
+        <tr><td class="n">9</td><td>automated checks on every resume, and more when a cover letter is included</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="prose">
+      <h2>Who did what</h2>
+      <p>I built this by directing Claude Code, Anthropic's coding agent. I don't write Python by hand. I set the rules, decided what counts as evidence, and review what comes out. The assistant runs the searches and drafts the documents inside those rules.</p>
+      <p>The same approach works for any routine an AI runs on a team's behalf: reporting, reconciliation, intake, status collection. Define the work as data, require evidence for each step, and put a person at the points where judgment matters.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Jordan Kahn</strong></p>
+    <p>Las Cruces, New Mexico</p>
+    <p><a href="https://www.linkedin.com/in/jordan-l-kahn">linkedin.com/in/jordan-l-kahn</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jordan Kahn | Builds</title>
+<meta name="description" content="Tools and case studies from Jordan Kahn, an operations builder who works with AI coding agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1F4EE; --ink: #15251F; --muted: #55655E; --rule: #C5CFC4;
+    --refuse: #B4311F; --pass: #1E6B57; --screen: #15251F; --screen-ink: #E4EBE2;
+    --sans: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 1.0625rem; line-height: 1.6; }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem; }
+  a { color: var(--ink); text-underline-offset: 0.18em; }
+  a:focus-visible { outline: 2px solid var(--pass); outline-offset: 3px; }
+
+  header.top { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: 0.9375rem; }
+  header.top .who { font-weight: 600; }
+  header.top a { color: var(--muted); }
+
+  .hero { padding: 5rem 0 4.5rem; }
+  h1 { font-size: clamp(2.5rem, 6.4vw, 4.6rem); line-height: 1.04; letter-spacing: -0.025em; font-weight: 600; margin: 0 0 1.75rem; max-width: 17ch; text-wrap: balance; }
+  .lede { font-size: 1.25rem; line-height: 1.5; margin: 0; max-width: 39rem; }
+
+  article.build { border-top: 1px solid var(--ink); padding: 3.5rem 0 4.5rem; display: grid; grid-template-columns: 7fr 5fr; gap: 3.5rem; align-items: start; }
+  article.build.flip { grid-template-columns: 5fr 7fr; }
+  article.build.flip .media { order: 2; }
+  .media { min-width: 0; }
+  .media img { display: block; width: 100%; height: auto; border-radius: 3px; border: 1px solid var(--ink); }
+  pre { font-family: var(--mono); font-size: 0.875rem; line-height: 1.65; background: var(--screen); color: var(--screen-ink); margin: 0; padding: 1.5rem 1.6rem; border-radius: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  pre .cmd, pre .dim { color: #9FB3A8; }
+  pre .fail { color: #FF9C8A; font-weight: 500; }
+  .credit { font-size: 0.875rem; color: var(--muted); margin: 0.75rem 0 0; }
+
+  .text { min-width: 0; }
+  .kind { font-size: 0.9375rem; color: var(--muted); margin: 0 0 0.5rem; }
+  h2 { font-size: 2rem; line-height: 1.15; letter-spacing: -0.015em; font-weight: 600; margin: 0 0 1.25rem; }
+  p { margin: 0 0 1.1rem; }
+  .with { font-size: 0.9375rem; color: var(--muted); }
+  .go { display: inline-block; margin-top: 0.75rem; padding: 0.7rem 1.15rem; background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 500; border-radius: 3px; }
+  .go:hover { background: #24423A; }
+  .go:focus-visible { outline: 2px solid var(--pass); outline-offset: 3px; }
+
+  section.before { border-top: 1px solid var(--ink); padding: 3.5rem 0 4rem; }
+  section.before .cols { display: grid; grid-template-columns: 5fr 7fr; gap: 3.5rem; }
+  section.before h2 { font-size: 1.75rem; }
+
+  footer { border-top: 1px solid var(--ink); padding: 2rem 0 3.5rem; font-size: 0.9375rem; }
+  footer p { margin: 0 0 0.3rem; }
+
+  @media (max-width: 54rem) {
+    article.build, article.build.flip, section.before .cols { grid-template-columns: 1fr; gap: 2rem; }
+    article.build.flip .media { order: 0; }
+    .hero { padding: 3rem 0; }
+    article.build { padding: 2.5rem 0 3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="who">Jordan Kahn</span>
+    <a href="https://www.linkedin.com/in/jordan-l-kahn">LinkedIn</a>
+  </header>
+
+  <div class="hero">
+    <h1>I build the tools a small team's operations run on</h1>
+    <p class="lede">I'm an operations person who builds with AI coding agents. I spent five years at a 25-person game publisher building the workflows, agents and internal tools that let it support more than 230 titles. These are things I've built since.</p>
+  </div>
+
+  <article class="build">
+    <div class="media">
+<pre><span class="cmd">$ python3 sweeprun.py verify</span>
+<span class="fail">FAIL — 11 cell(s) in today's scope not run.</span>
+Do NOT write the sweep file. Run `sweeprun.py next` and keep going, or stop and say the sweep is incomplete.
+   not run: LinkedIn  ·  "AI automation"
+   not run: LinkedIn  ·  "workflow automation"
+   not run: ATS text search  ·  "n8n"
+   not run: ATS text search  ·  "Airtable"
+<span class="dim">   ... 7 more</span></pre>
+      <p class="credit">Real output. The check names every missing step and blocks the report.</p>
+    </div>
+    <div class="text">
+      <p class="kind">Case study</p>
+      <h2>A daily process an AI can't quietly skip</h2>
+      <p>An AI assistant was running a daily routine for me. It skipped whole steps for more than a week and reported them done.</p>
+      <p>I built a ledger that only accepts a step with evidence, a check that blocks the day's report until every step has run, and a gate every document has to pass before I read it and send it.</p>
+      <p class="with">Built with Python, JSON data files and Claude Code.</p>
+      <a class="go" href="job-search-system/">Read the case study</a>
+    </div>
+  </article>
+
+  <article class="build flip">
+    <div class="media">
+      <img src="assets/drill-caller.jpg" width="1100" height="1175" alt="Drill Caller mid-drill. A list of longsword drills on the left. On the right, the current call: Roverso sottano, passare, a backhand rising cut with a pass, beside a diagram of the cut.">
+      <p class="credit">Drills follow Guy Windsor's <em>The Medieval Longsword</em>. The cut diagram is from Fiore dei Liberi's <em>Fior di Battaglia</em>.</p>
+    </div>
+    <div class="text">
+      <p class="kind">Live tool</p>
+      <h2>Drill Caller</h2>
+      <p>I practice longsword alone, and I wanted a voice calling moves so I could fight them without looking at a screen.</p>
+      <p>Drill Caller is a web app that runs on a phone. You pick a drill and set the pace, and it calls each move aloud in the Italian terms with the English beside them. In the random drills, the next attack usually starts from where the last one ended, so the sequence makes sense in the body.</p>
+      <p>I use it in my own practice, and I shared it on Guy Windsor's community site.</p>
+      <p class="with">Built with Claude Code. Voices generated with ElevenLabs.</p>
+      <a class="go" href="https://kahnjl-dev.github.io/hema-drills/">Open Drill Caller</a>
+    </div>
+  </article>
+
+  <section class="before">
+    <div class="cols">
+      <h2>Before these</h2>
+      <div>
+        <p>At indie.io I built and maintained 8 to 10 production workflows in n8n, wrote custom MCP servers where no connector existed, and built an AI agent system on the Anthropic SDK that drafted replies to developer questions for a person to review.</p>
+        <p>That work belongs to the company, so it isn't shown here. I'm glad to walk through how it was built.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>Jordan Kahn</strong></p>
+    <p>Las Cruces, New Mexico</p>
+    <p><a href="https://www.linkedin.com/in/jordan-l-kahn">linkedin.com/in/jordan-l-kahn</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
